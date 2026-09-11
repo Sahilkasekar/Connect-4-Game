@@ -1,0 +1,111 @@
+ROWS = 6
+COLS = 7
+
+board = [["." for _ in range(COLS)] for _ in range(ROWS)]
+
+
+def print_board():
+    print()
+    for row in board:
+        print("| " + " | ".join(row) + " |")
+    print("-----------------------------")
+    print("  1   2   3   4   5   6   7")
+
+
+def drop_piece(col, player):
+    for row in range(ROWS - 1, -1, -1):
+        if board[row][col] == ".":
+            board[row][col] = player
+            return row
+    return -1
+
+
+def check_winner(row, col, player):
+    directions = [
+        (0, 1),
+        (1, 0),
+        (1, 1),
+        (1, -1)
+    ]
+
+    for dr, dc in directions:
+        count = 1
+
+        r = row + dr
+        c = col + dc
+
+        while 0 <= r < ROWS and 0 <= c < COLS:
+            if board[r][c] == player:
+                count += 1
+                r += dr
+                c += dc
+            else:
+                break
+
+        r = row - dr
+        c = col - dc
+
+        while 0 <= r < ROWS and 0 <= c < COLS:
+            if board[r][c] == player:
+                count += 1
+                r -= dr
+                c -= dc
+            else:
+                break
+
+        if count >= 4:
+            return True
+
+    return False
+
+
+def main():
+    player = "X"
+
+    print("===== CONNECT 4 GAME =====")
+
+    while True:
+        print_board()
+
+        try:
+            choice = int(input("Player " + player + ", choose column (1-7): "))
+        except ValueError:
+            print("Enter a number from 1 to 7.")
+            continue
+
+        if choice < 1 or choice > 7:
+            print("Choose a column between 1 and 7.")
+            continue
+
+        col = choice - 1
+
+        row = drop_piece(col, player)
+
+        if row == -1:
+            print("Column is full. Choose another column.")
+            continue
+
+        if check_winner(row, col, player):
+            print_board()
+            print("Player " + player + " wins!")
+            break
+
+        full = True
+
+        for col in range(COLS):
+            if board[0][col] == ".":
+                full = False
+                break
+
+        if full:
+            print_board()
+            print("Game Draw!")
+            break
+
+        if player == "X":
+            player = "O"
+        else:
+            player = "X"
+
+
+main()
